@@ -11,8 +11,8 @@
 
 ## 更新
 
-- 1.0.3 
-    - 修复错误提示语法错误;
+- 1.0.3
+    - 修复错误提示语法错误;
     - 优化文档说明；
 
 ## 使用姿势：
@@ -40,7 +40,7 @@
 ></MTUpload>
 ```
 
-## 详细属性与事件
+## 详细属性与事件
 
 - uploadConfig: 图片上传配置，缺省时不进行上传
     - type: Object
@@ -64,7 +64,7 @@
     - type: Boolean
     - default: false
 
-- uploadId: 组件id，会在success中原样传出，可用于标识
+- uploadId: 组件id，会在success中原样传出，可用于标识
 
     - type: Number
     - default: 0
@@ -128,12 +128,12 @@
     - image: 图片路径
     - width: 图片宽度
     - height: 图片高度
-    - uploadId: 组件id
+    - uploadId: 组件id
     - uploadTime: 上传耗时
 
 - @fail.user: 图片选择失败；
     - error: 错误对象；
-    - type: 错误类型；
+    - type: 错误类型；
     - msg: 错误提示语；
 
 
