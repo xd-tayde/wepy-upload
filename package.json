@@ -1,0 +1,17 @@
+{
+  "name": "wepy-upload",
+  "version": "1.0.3",
+  "description": "the upload module of wepy.",
+  "keywords": [
+    "wepy-upload",
+    "upload",
+    "wepy",
+    "mini-program"
+  ],
+  "main": "index.wpy",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "GXD",
+  "license": "MIT"
+}

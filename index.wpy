@@ -1,0 +1,672 @@
+<style lang="scss">
+@mixin abso($left: 0, $top: 0){
+    position: absolute;
+    left: $left;
+    top: $top;
+}
+
+@mixin full(){
+    width: 100%;
+    height: 100%;
+}
+
+.MTUpload{
+    &--canvas{
+        @include abso(-9999px, -9999px);
+        opacity: 0;
+        visibility: hidden;
+        width: 1500px;
+        height: 1500px;
+    }
+
+    &--bg, &--text{
+        @include abso;
+        @include full;
+    }
+
+    &-model{
+        @include full;
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 9999;
+        visibility: hidden;
+        pointer-events:none;
+        overflow: hidden;
+        &.show{
+            visibility: visible;
+            pointer-events:auto;
+            .MTUpload-choose--box{
+                transition: transform 0.3s;
+                transform: translateY(0);
+            }
+        }
+
+        &--bg{
+            @include abso;
+            @include full;
+            z-index: 9;
+            background-color: rgba(0,0,0,.3);
+        }
+    }
+
+    &-choose--box{
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        z-index: 99;
+        width: 100%;
+        height: 314rpx;
+        background-color: rgba(255,255,255,.5);
+        transform: translateY(100%);
+    }
+    &-choose--item{
+        width: 100%;
+        height: 100rpx;
+        text-align: center;
+        font-size: 34rpx;
+        line-height: 100rpx;
+        color: #000000;
+        background: #fff;
+        &.camera{
+            border-bottom: 1rpx solid #bbb7b7;
+        }
+        &.cancel{
+            margin-top: 14rpx;
+        }
+    }
+}
+
+$sure: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAPFBMVEUAAAD/Q2P/RWX/QGD/QmL/RGT/Q2P/Q2P/Q2P/Q2P/RGT/Q2P/RGT/RGT/Q2P/Q2P/RGT/RGT/QGD/RGTrzt7iAAAAE3RSTlMA8DAQYM+gn9DfgJC/sFDgcEAgUvXhRwAAANZJREFUWMPt1bsOwjAMheEkJm2TXrj4/d8VsXAqMxjbEiw5a/r9S1M1jY39ddQbtx7wlV/bgp65Bz03X2Dm96Keo34P+kxBX2Kej6C/2P1leGw9H2yc54fNTx8vJheHx4FeOITHKn9TKFl4TFxss0+LKFh96iwKil8oiS2iYPWJzoVGVi+fqKR5Y4Ga8MYCVeEtBemv0usFeP2uF5YFeMfXNmteL2heLxTprQUWPlKA1wtOj61Oj02Qzh/AFPMowPsK8L4CvK8AHylkePvu636jNDb2sz0BvF83HzJntz8AAAAASUVORK5CYII=';
+$album:'data:image/png;base64,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';
+$back:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAM1BMVEUAAAC/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v78/edZTAAAAEHRSTlMAQF+gIN/wgMAQUDBw0LCQBn3dpAAAAOxJREFUWMPt0duqwyAUhOHxEI9J6/s/7S6uTSgkdrUOpTf5bmV+RHG5fJldyHlr3PyBmz8Qc0HMBTEXxFwQc2GeTMwPQorFK3PdZom5CPEQ8K59ZPNsIliQiVDxTgLPqinxFvaCB/QEDrJNTSRAT+DM+n8LAz2BUzXsV9ASOGfktEJNYECOV0BLDE974AZoCYxs/ScBLYGRqDyCyshH/jxQ2ED84Q0K+wZ3NrD0gCefYMG01AMOs2zrLLkPGVPyvYk4N1+XNnuBbEpMbbcOfuddDlzAgQtEUIFUwQScAWYDIcWSX37UKxWXy/f8AWohM0jX75AeAAAAAElFTkSuQmCC';
+
+.MTCamera{
+    @include full();
+    position: fixed;
+    left: 0;
+    top: 0;
+    background-color: #fff;
+    &-screen, &-layer{
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+    &-screen{
+        width: 750rpx;
+        height: 900rpx;
+        z-index: 1;
+        &--preview{
+            width: 750rpx;
+            height: 900rpx;
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: 2;
+            opacity: 0;
+            &.show{
+                opacity: 1;
+            }
+        }
+
+        &--guide{
+            width: 750rpx;
+            height: 740rpx;
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            display: none;
+            &.show{
+                display: block;
+            }
+        }
+
+        &--close{
+            width: 64rpx;
+            height: 64rpx;
+            position: absolute;
+            left: 30rpx;
+            top: 20rpx;
+            z-index: 3;
+            display: none;
+            &.show{
+                display: block;
+            }
+        }
+    }
+
+    &-bottom{
+        @include full();
+        box-sizing: border-box;
+        padding-top: 900rpx;
+        display: flex;
+        align-items: center;
+
+        &--center{
+            box-sizing: border-box;
+            width: 148rpx;
+            height: 148rpx;
+            border: 8rpx solid #ff4464;
+            background-color: #fff;
+            border-radius: 50%;
+            margin-left: 142rpx;
+            &.sure{
+                background-image: url($sure);
+                background-position: center;
+                background-size: 64rpx 64rpx;
+                background-repeat: no-repeat;
+            }
+        }
+
+        &--album{
+            width: 100rpx;
+            height: 100rpx;
+            margin-left: 142rpx;
+            background-image: url($album);
+            background-position: center;
+            background-size: 100% auto;
+            background-repeat: no-repeat;
+        }
+
+        &--back{
+            box-sizing: border-box;
+            width: 100rpx;
+            height: 100rpx;
+            border: 7rpx solid #bfbfbf;
+            background-color: #fff;
+            border-radius: 50%;
+            margin-left: 60rpx;
+            background-image: url($back);
+            background-position: center;
+            background-size: 64rpx 64rpx;
+            background-repeat: no-repeat;
+            visibility: hidden;
+            pointer-events: none;
+            &.show{
+                visibility: visible;
+                pointer-events: auto;
+            }
+        }
+    }
+}
+</style>
+<template>
+    <!-- 上传按钮 -->
+    <button class="Button MTUpload" @tap="buttonTap">
+        <image wx:if="{{ bg }}" class="MTUpload--bg" src="{{ bg }}"></image>
+        <text wx:if="{{ text }}" class="MTUpload--text">{{ text }}</text>
+    </button>
+
+    <!-- 上传弹窗 -->
+    <view class="MTUpload-model {{ modelShow ? 'show':'' }}" @tap="hideModel">
+        <!-- 解决ios下，子元素动画导致的父元素背景闪烁 -->
+        <view class="MTUpload-model--bg"></view>
+        <view class="MTUpload-choose--box">
+            <view class="MTUpload-choose--item camera" @tap.stop="openCamera">{{modelPhotoText}}</view>
+            <view class="MTUpload-choose--item album" @tap.stop="openAlbum">{{modelAlbumText}}</view>
+            <view class="MTUpload-choose--item cancel" @tap.stop="hideModel">{{modelHideText}}</view>
+        </view>
+    </view>
+
+    <!-- 自定义相机 -->
+    <view class="MTCamera {{ camera.show ? 'show' : '' }}"
+        wx:if="{{ camera.show }}"
+    >
+        <!-- 相机组件 -->
+        <camera class="MTCamera-screen"
+            device-position="front"
+            flash="off"
+            style="height:calc(100vh - 300rpx);"
+        >
+            <!-- 人相框 -->
+            <cover-image class="MTCamera-screen--guide {{ camera.guideShow ? 'show' : '' }}"
+                src="https://h5.meitu.com/xiuxiu/andy-move/dist/images/skip-guide.png"
+            ></cover-image>
+            <!-- 预览图 -->
+            <cover-image class="MTCamera-screen--preview {{ camera.status > 0 ? 'show' : '' }}"
+                src="{{ camera.preview }}"
+                style="height:calc(100vh - 300rpx);"
+            ></cover-image>
+            <!-- 关闭按钮 -->
+            <cover-image class="MTCamera-screen--close {{ camera.status > 0 ? '' : 'show' }}"
+                @tap="closeCamera"
+                src="https://h5.meitu.com/xiuxiu/mp_images/camera/close.png"
+            ></cover-image>
+        </camera>
+        <view class="MTCamera-bottom"
+            style="padding-top:calc(100vh - 300rpx);"
+        >
+            <!-- 返回按钮 -->
+            <view class="MTCamera-bottom--back {{ camera.status > 0 ? 'show' : '' }}"
+                @tap="cameraBack"
+            ></view>
+            <!-- 拍照/确认按钮 -->
+            <view class="MTCamera-bottom--center {{ camera.status > 0 ? 'sure' : '' }}"
+                @tap="cameraShot({{camera.status > 0 ? 'sure' : 'shot'}})"
+            ></view>
+            <!-- 相册 -->
+            <view class="MTCamera-bottom--album"
+                @tap="cameraToAlbum"
+            ></view>
+        </view>
+    </view>
+
+    <canvas canvas-id="uploadCanvas" class="MTUpload--canvas"/>
+</template>
+<script>
+import wepy from 'wepy';
+
+function Upload(options) {
+    if (!(this instanceof Upload)) return new Upload(options);
+
+    this.options = extend({
+        api: {},
+        dataToImageUrl(data) {
+            return JSON.stringify(data);
+        },
+        msg: {
+            network: '您的网络有问题，请重试',
+            fail: '图片绘制失败，请重试',
+        },
+    }, options);
+}
+
+Upload.prototype.up = function (filePath) {
+    let starttime = new Date().getTime();
+    return new Promise((resolve, reject) => {
+        this.getToken(this.options.api.token).then(token => {
+            wx.uploadFile({
+                url: this.options.api.upload,
+                filePath,
+                name: 'file',
+                formData: { token },
+                success: data => {
+                    if (data.statusCode == 200) {
+                        resolve({
+                            data,
+                            image: this.options.dataToImageUrl(data),
+                            uploadTime: new Date().getTime() - starttime,
+                        });
+                    } else {
+                        reject({
+                            error: data,
+                            msg: this.options.msg.fail,
+                        });
+                    }
+                },
+                fail: error => reject({
+                    error,
+                    msg: this.options.msg.network,
+                }),
+            });
+        }).catch(error => reject({
+            error,
+            msg: this.options.msg.network,
+        }));
+    });
+};
+
+Upload.prototype.getToken = function (tokenURL) {
+    return new Promise((resolve, reject) => {
+        wx.request({
+            url: tokenURL,
+            success: data => resolve(data.data.upload_token),
+            fail: err => reject(err),
+        });
+    });
+};
+
+function extend(obj1, obj2) {
+    for (let k in obj2) {
+        if (obj2.hasOwnProperty(k)) {
+            if (typeof obj2[k] == 'object') {
+                if (typeof obj1[k] !== 'object' || obj1[k] === null) {
+                    obj1[k] = {};
+                }
+                extend(obj1[k], obj2[k]);
+            } else {
+                obj1[k] = obj2[k];
+            }
+        }
+    }
+    return obj1;
+}
+
+export default class MTUpload extends wepy.component {
+    props = {
+        // 上传配置；
+        uploadConfig: {
+            type: Object,
+            default: {},
+        },
+        // 是否使用自定义相机；
+        useCustomizedCamera: {
+            type: Boolean,
+            default: false,
+        },
+        // 上传组件ID，可用于区分回调；
+        uploadId: {
+            type: Number,
+            default: 0,
+        },
+        // 按钮背景；
+        bg: {
+            type: String,
+            default: '',
+        },
+        // 按钮文案；
+        text: {
+            type: String,
+            default: '',
+        },
+        // 上传图片大小限制；
+        imageSpaceLimit: {
+            type: String,
+            default: '10mb',
+        },
+        // 上传图片压缩尺寸；
+        imageSizeLimit: {
+            type: Number,
+            default: 800,
+        },
+        // 图片压缩比例；
+        imageQuality: {
+            type: Number,
+            default: 0.9,
+        },
+        // 底部弹窗文案；
+        modelPhotoText: {
+            type: String,
+            default: '拍照',
+        },
+        modelAlbumText: {
+            type: String,
+            default: '从手机相册选择',
+        },
+        modelHideText: {
+            type: String,
+            default: '取消',
+        },
+    }
+    data = {
+        // 上传实例
+        $upload: null,
+        // 上传消耗时间；
+        starttime: 0,
+        // 弹窗展示；
+        modelShow: false,
+        // 压缩前的原图；
+        beforeCompress: null,
+        // 压缩后的图片；
+        afterCompress: null,
+        // 自定义相机配置；
+        camera: {
+            // 显示与隐藏；
+            show: false,
+            // 0 : 拍照状态；
+            // 1 : 确认状态；
+            status: 0,
+            // 预览图
+            preview: '',
+            // 人相框的显示与隐藏；
+            guideShow: true,
+        },
+    }
+    onLoad() {
+        // 初始化上传实例；
+        this.$upload = Upload(this.uploadConfig);
+
+        // 获取系统信息；
+        const systemInfo = wx.getSystemInfoSync();
+
+        // 当屏幕高度过小时，隐藏人相框；
+        if (systemInfo.windowHeight * 0.75 < 370) {
+            this.camera.guideShow = false;
+        }
+    }
+    methods = {
+        // 上传按钮点击；
+        buttonTap(e) {
+            // 释放tap事件
+            this.$emit('tap', e);
+            // 唤醒弹窗；
+            this.showModel(this);
+        },
+        // 隐藏弹窗；
+        hideModel: () => {
+            this.modelShow = false;
+            this.$apply();
+        },
+        // 打开相册；
+        openAlbum: () => {
+            this.getNetork().then(() => {
+                this.chooseImage('album');
+            }).catch((err) => {
+                this.modelShow = false;
+                this.$emit('fail', err);
+            });
+        },
+        // 打开相机；
+        openCamera: () => {
+            this.getNetork().then(() => {
+                // 使用自定义相机；
+                if (this.useCustomizedCamera) {
+                    this.modelShow = false;
+                    this.camera.show = true;
+                    this.$apply();
+                } else {
+                    this.chooseImage('camera');
+                }
+            }).catch(err => {
+                this.modelShow = false;
+                this.$emit('fail', err);
+            });
+        },
+        // 自定义相机事件；
+        cameraToAlbum() {
+            this.chooseImage('album');
+        },
+        cameraShot(type) {
+            // 拍照事件；
+            if (type == 'shot') {
+                const ctx = wx.createCameraContext();
+                ctx.takePhoto({
+                    quality: 'high',
+                    success: res => {
+                        this.camera.preview = res.tempImagePath;
+                        this.switchCameraStatus(1);
+                    },
+                });
+            } else if (type == 'sure') {
+                // 确认事件；
+                // 放出临时图片路径，并关闭相机；
+                this.camera.show = false;
+                this.uploadTempFilePath(this.camera.preview);
+                this.switchCameraStatus(0);
+            }
+        },
+        // 返回拍照状态；
+        cameraBack() {
+            this.camera.preview = '';
+            this.switchCameraStatus(0);
+        },
+        // 关闭相机；
+        closeCamera() {
+            this.camera.show = false;
+            this.$apply();
+        },
+    }
+    // 切换相机状态；
+    switchCameraStatus(status) {
+        this.camera.status = status;
+        this.$apply();
+    }
+    showModel() {
+        this.modelShow = true;
+        this.$apply();
+    }
+    // 选择图片；
+    chooseImage(type) {
+        // 关闭蒙层
+        this.modelShow = false;
+        this.$apply();
+        // 调用原生选择图片；
+        this.wxChooseImage(type).then(filePath => {
+            // 选择完后上传图片；
+            this.uploadTempFilePath(filePath);
+        }).catch(err => {
+            this.modelShow = false;
+            this.$emit('fail', err);
+        });
+    }
+    // 上传临时路径到美图云；
+    uploadTempFilePath(filePath) {
+        this.$emit('start', { filePath });
+        // 获取图片信息；
+        wepy.getImageInfo({
+            src: filePath,
+        }).then(beforeCompress => {
+            this.beforeCompress = beforeCompress;
+            // 压缩图片；
+            return this.compressImage(beforeCompress);
+        }).then(afterCompress => {
+            this.afterCompress = afterCompress;
+            console.log('afterCompress', afterCompress);
+            this.$emit('compress', afterCompress);
+            // 开始上传；
+            return this.uploadConfig.api ? this.$upload.up(afterCompress.path) : afterCompress;
+        }).then(data => {
+            let { width, height, compressTime } = this.afterCompress;
+            this.$emit('success', {
+                ...data,
+                width,
+                height,
+                compressTime,
+                uploadId: this.uploadId,
+            });
+        }).catch(err => {
+            this.modelShow = false;
+            this.$emit('fail', err);
+        });
+    }
+    // 原生图片选择；
+    wxChooseImage(type) {
+        return new Promise((resolve, reject) => {
+            wx.chooseImage({
+                count: 1,
+                sourceType: [type],
+                sizeType: ['original'],
+                success: data => {
+                    if (data.tempFiles[0].size > this.imageSpaceTrans(this.imageSpaceLimit)) {
+                        reject({
+                            error: data.tempFiles[0],
+                            type: 'toLarge',
+                            msg: '图片尺寸过大, 请重试~',
+                        });
+                    } else {
+                        resolve(data.tempFilePaths[0]);
+                    }
+                },
+                fail: error => reject({
+                    type: 'cancelChoose',
+                    error,
+                    msg: '用户取消选择',
+                }),
+            });
+        });
+    }
+    // 压缩图片；
+    compressImage(img) {
+        let compressStart = new Date().getTime();
+        return new Promise((resolve, reject) => {
+            if (img.width > this.imageSizeLimit || img.height > this.imageSizeLimit) {
+                let ctx = wx.createCanvasContext('uploadCanvas');
+                let imgRatio = img.width / img.height;
+                let exportWidth, exportHeight;
+                if (imgRatio > 1) {
+                    exportWidth = this.imageSizeLimit;
+                    exportHeight = Math.round(exportWidth / imgRatio);
+                } else {
+                    exportHeight = this.imageSizeLimit;
+                    exportWidth = Math.round(exportHeight * imgRatio);
+                }
+                ctx.drawImage(img.path, 0, 0, exportWidth, exportHeight);
+                ctx.draw(false, () => {
+                    this.canvasToTempFilePath(exportWidth, exportHeight).then(res => {
+                        resolve({
+                            path: res.tempFilePath,
+                            width: exportWidth,
+                            height: exportHeight,
+                            compressTime: new Date().getTime() - compressStart,
+                        });
+                    });
+                });
+            } else {
+                resolve({
+                    path: img.path,
+                    width: img.width,
+                    height: img.height,
+                    compressTime: 0,
+                });
+            }
+        });
+    }
+    // 画布导出图片；
+    canvasToTempFilePath(width, height) {
+        return new Promise(resolve => {
+            wx.canvasToTempFilePath({
+                canvasId: 'uploadCanvas',
+                fileType: 'jpg',
+                quality: this.imageQuality,
+                x: 0,
+                y: 0,
+                width: width,
+                height: height,
+                destWidth: width,
+                destHeight: height,
+                success: resolve,
+                fail: () => {
+                    this.canvasToTempFilePath(width, height).then(data => resolve(data));
+                },
+            });
+        });
+    }
+    // 图片大小单位转换；
+    imageSpaceTrans(space) {
+        let spaceWithB = 0;
+        if (space.indexOf('mb') > 0) {
+            spaceWithB = 1024 * 1024 * (+space.replace('mb', ''));
+        } else if (space.indexOf('kb') > 0) {
+            spaceWithB = 1024 * (+space.replace('kb', ''));
+        } else {
+            spaceWithB = +space;
+        }
+        return spaceWithB;
+    }
+    // 判断网络；
+    getNetork() {
+        return new Promise((resolve, reject) => {
+            wx.getNetworkType({
+                success: res => {
+                    if (res.networkType !== 'none') {
+                        resolve();
+                    } else {
+                        reject({
+                            error: res,
+                            type: 'network',
+                            msg: '您的网络有问题，请重试',
+                        });
+                    }
+                },
+                fail: error => {
+                    reject({
+                        error,
+                        type: 'network',
+                        msg: '您的网络有问题，请重试',
+                    });
+                },
+            });
+        });
+    };
+}
+</script>
